@@ -165,8 +165,10 @@ Example in Haskell:
 >   where 
 >         reps [] = ([], [])
 >         reps (y:ys)
->           | (y == x) = let (f,r) = reps ys in (y:f, r)
+>           | (y == x) = (y:f, r)
 >           | otherwise = ([], (y:ys))
+>            where 
+>             (f, r) = reps ys
 >         (first, rest) = reps xs
 
 Problem 10
@@ -185,8 +187,12 @@ encode "aaaabccaadeeee"
 >  where 
 >   reps [] = ([], [])
 >   reps (y:ys)
->    | (y == x) = let (f,r) = reps ys in (y:f, r)
+>    | (y == x) = (y:f, r) 
 >    | otherwise = ([], (y:ys))
+>     where 
+>      (f, r) = reps ys
 >   (first, rest) = reps xs
 >   count :: [a] -> (Int, a)
 >   count xm = (length xm , head xm)
+
+/  | (y == x) = let (f,r) = reps ys in (y:f, r)
