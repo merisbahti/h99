@@ -21,8 +21,10 @@ P11> encodeModified "aaaabccaadeeee"
 >  where 
 >   reps [] = ([], [])
 >   reps (y:ys)
->    | (y == x) = let (f,r) = reps ys in (y:f, r)
+>    | (y == x) = (y:f, r)
 >    | otherwise = ([], (y:ys))
+>     where 
+>      (f, r) = reps ys
 >   (first, rest) = reps xs
 >   count :: [a] -> Some a
 >   count xm = Multiple (length xm) (head xm)
@@ -60,7 +62,6 @@ Example in Haskell:
 P13> encodeDirect "aaaabccaadeeee"
 [Multiple 4 'a',Single 'b',Multiple 2 'c',
  Multiple 2 'a',Single 'd',Multiple 4 'e']
-
 
 Problem 14
 
@@ -117,38 +118,39 @@ Example in Haskell:
 
  split :: [a] -> Int -> [[a]]
 
+> split :: [a] -> Int -> [[a]]
+> split xs i = splitHelper xs [] i
+>   where
+>   splitHelper :: [a] -> [a] -> Int -> [[a]]
+>   splitHelper (x:xs) acc 0 = acc : (x:xs) : []
+>   splitHelper (x:xs) acc i = splitHelper (xs) (acc ++ [x]) (i-1)
+>   splithelper _ _ _         = error "wtf are you doing mate"
+
+
+
 Problem 18
 
 (**) Extract a slice from a list.
 
 Given two indices, i and k, the slice is the list containing the elements between the i'th and k'th element of the original list (both limits included). Start counting the elements with 1.
 
-Example:
-
-* (slice '(a b c d e f g h i k) 3 7)
-(C D E F G)
-
 Example in Haskell:
 
 *Main> slice ['a','b','c','d','e','f','g','h','i','k'] 3 7
 "cdefg"
 
-
-
+> slice :: [a] -> Int -> Int -> [a]
+> slice _ _ 2       = []
+> slice (x:xs) 1 t  = x : slice xs 1 (t-1)
+> slice (_:xs) i t      
+>   | i < t     = slice xs (i-1) t
+>   | otherwise = error "what's going on"
 
 Problem 19
 
 (**) Rotate a list N places to the left.
 
 Hint: Use the predefined functions length and (++).
-
-Examples:
-
-* (rotate '(a b c d e f g h) 3)
-(D E F G H A B C)
-
-* (rotate '(a b c d e f g h) -2)
-(G H A B C D E F)
 
 Examples in Haskell:
 
