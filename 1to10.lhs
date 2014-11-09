@@ -124,11 +124,12 @@ We have to define a new data type, because lists in Haskell are homogeneous.
 
 > data NestedList a = Elem a | List [NestedList a]
 > flatten :: NestedList a -> [a]
-> flatten = accum []
->   where 
->   accum acc (List [])     = acc
->   accum acc (Elem x)      = acc ++ [x]
->   accum acc (List (x:xs)) = accum (accum acc x) (List xs)
+> flatten nl = flattenHelper nl []
+>  where 
+>   flattenHelper :: NestedList a -> [a] -> [a]
+>   flattenHelper (List []) acc = acc
+>   flattenHelper (Elem x) acc = acc ++ [x]
+>   flattenHelper (List (x:xs)) acc = flattenHelper (List xs) (flattenHelper x acc) 
 
 Problem 8
 
@@ -181,18 +182,8 @@ encode "aaaabccaadeeee"
 [(4,'a'),(1,'b'),(2,'c'),(2,'a'),(1,'d'),(4,'e')]
 
 > encode :: (Eq a) => [a] -> [(Int, a)]
-> encode []     = []
-> encode [x]    = [(1, x)]
-> encode (x:xs) = count (x:first) : encode rest
->  where 
->   reps [] = ([], [])
->   reps (y:ys)
->    | (y == x) = (y:f, r) 
->    | otherwise = ([], (y:ys))
->     where 
->      (f, r) = reps ys
->   (first, rest) = reps xs
->   count :: [a] -> (Int, a)
->   count xm = (length xm , head xm)
+> encode = (map (\i -> (length i, head i))) . pack
 
-/  | (y == x) = let (f,r) = reps ys in (y:f, r)
+
+
+
